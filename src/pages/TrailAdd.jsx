@@ -31,7 +31,8 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
 
   //update the trail markers when the maplocation changes
   useEffect(() => {
-    setTrail({ ...trail, location: mapLocation });
+    // rerender the map
+
   }, [mapLocation]);
   // handle the geocoding of the address
   const handleGeocode = async (e) => {
@@ -62,6 +63,7 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
       ...trail,
       location: { lat: e.latLng.lat(), lng: e.latLng.lng() },
     });
+    console.log(trail.location)
   };
 
   const createTrail = async (e) => {
@@ -137,8 +139,10 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
               mapContainerStyle={{ height: "400px", width: "100%" }}
               center={{ lat: mapLocation.lat, lng: mapLocation.lng }}
               zoom={10}
+              onClick={onMapClick}
             >
               <Marker
+                key={1}
                 position={{ lat: mapLocation.lat, lng: mapLocation.lng }}
               />
             </GoogleMap>
