@@ -8,16 +8,17 @@ import Trail3 from '../assets/images/trail3.jpg';
 import { Container, Row, Col, Form, Button, InputGroup, DropdownButton, Dropdown, Carousel } from 'react-bootstrap';
 
 
+// eslint-disable-next-line react/prop-types
 const Home = ({trails, setTrails, isMapLoaded, userLocation}) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterOption, setFilterOption] = useState("");
+  // const [filterOption, setFilterOption] = useState("");
   const [sortOption, setSortOption] = useState("Sort by");
-  const [weather, setWeather] = useState({ temp: 0, description: "" });
+  // const [weather, setWeather] = useState({ temp: 0, description: "" });
 
   const router = useNavigate();
 
   // fetch the weather of the trail location using the open weather map api
-  useEffect(() => {}, []);
+  // useEffect(() => {}, []);
 
   // sort the trails based on sort options
   // sort options: rating, difficulty, length, recently added, upvotes, most visits

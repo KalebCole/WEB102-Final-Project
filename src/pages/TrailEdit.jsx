@@ -2,10 +2,18 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../client";
 import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
+import {
+  GoogleMap,
+  Marker,
+} from "@react-google-maps/api";
 
-const TrailEdit = () => {
+const TrailEdit = ({ isMapLoaded, userLocation }) => {
   const { id } = useParams();
   const router = useNavigate();
+  const [address, setAddress] = useState("");
+  const [mapLocation, setMapLocation] = useState(
+    {lat: 37.7749, lng: -122.4194} // Default to San Francisco, or any valid location
+  );
   const [trail, setTrail] = useState({
     name: "",
     description: "",
@@ -15,10 +23,49 @@ const TrailEdit = () => {
     image_url: "",
   });
 
+
+  useEffect(() => {
+    // when the trail updates, update the map location
+    if (trail.location) {
+      setMapLocation(trail.location);
+    }
+  }, [trail]);
   const handleImageChange = (e) => {
     if (e.target.files.length > 0) {
       setTrail({ ...trail, image: e.target.files[0] });
     }
+  };
+
+   // handle the geocoding of the address
+   const handleGeocode = async (e) => {
+    e.preventDefault();
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+        address
+      )}&key=${import.meta.env.VITE_REACT_APP_GOOGLE_MAP_KEY}`
+    );
+    const data = await response.json();
+    if (data.status === "OK" && data.results.length > 0) {
+      const location = data.results[0].geometry.location;
+      setTrail({
+        ...trail,
+        location: { lat: location.lat, lng: location.lng },
+      });
+      setMapLocation({ lat: location.lat, lng: location.lng });
+    }
+  };
+
+  const onMapClick = (e) => {
+    setMapLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+    // Update the location input field if necessary
+    setTrail({
+      ...trail,
+      location: { lat: e.latLng.lat(), lng: e.latLng.lng() },
+    });
+  };
+
+  const handleChange = (e) => {
+    setTrail({ ...trail, [e.target.name]: e.target.value });
   };
   useEffect(() => {
     const fetchTrail = async () => {
@@ -127,6 +174,30 @@ const TrailEdit = () => {
                     required
                   />
                 </Form.Group>
+                <Row>
+            <Form.Label>Address</Form.Label>
+            <Col>
+              <Form.Control type="text" name="address" onChange={(e) => setAddress(e.target.value)} />
+            </Col>
+            <Col xs="auto">
+              <Button variant="primary" onClick={handleGeocode}>Find on the map!</Button>
+            </Col>
+          </Row>
+        <Form.Group controlId="location">
+          {isMapLoaded ? (
+            <GoogleMap
+              mapContainerStyle={{ height: "400px", width: "100%" }}
+              center={{ lat: mapLocation.lat, lng: mapLocation.lng }}
+              zoom={10}
+            >
+              <Marker
+                position={{ lat: mapLocation.lat, lng: mapLocation.lng }}
+              />
+            </GoogleMap>
+          ) : (
+            <p>Loading map...</p>
+          )}
+        </Form.Group>
                 <Form.Group controlId="formTrailLength">
                   <Form.Label>Length (miles)</Form.Label>
                   <Form.Control

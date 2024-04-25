@@ -93,10 +93,13 @@ function App() {
     });
   }, []); // Empty dependency array to run only once on component mount
 
+
+
+
   const routes = useRoutes([
     { path: "/", element: <Home trails={trails} setTrails={setTrails} isMapLoaded={isLoaded} userLocation={userLocation}/> },
     { path: "add-trail", element: <TrailAdd isMapLoaded={isLoaded} userLocation={userLocation}/>},
-    { path: "/edit/:id", element: <TrailEdit /> },
+    { path: "/edit/:id", element: <TrailEdit isMapLoaded={isLoaded} userLocation={userLocation} /> },
     { path: "/details/:id", element: <TrailDetail /> },
     { path: "/add-visit/:id", element: <VisitAdd /> },
 
@@ -107,7 +110,7 @@ function App() {
     <>
       <Navbar bg="dark" variant="dark" expand="lg">
         <Container>
-          <Navbar.Brand href="/">Trail Hub</Navbar.Brand>
+          <Navbar.Brand href="/">Trail Connect</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">

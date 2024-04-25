@@ -4,9 +4,7 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import {
   GoogleMap,
-  LoadScript,
   Marker,
-  useJsApiLoader,
 } from "@react-google-maps/api";
 
 const TrailAdd = ({ isMapLoaded, userLocation }) => {
@@ -31,6 +29,10 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
     }
   };
 
+  //update the trail markers when the maplocation changes
+  useEffect(() => {
+    setTrail({ ...trail, location: mapLocation });
+  }, [mapLocation]);
   // handle the geocoding of the address
   const handleGeocode = async (e) => {
     e.preventDefault();
