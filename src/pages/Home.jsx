@@ -2,111 +2,94 @@ import { useEffect, useState } from "react";
 import {useNavigate} from 'react-router-dom';
 import TrailCard from "../components/TrailCard";
 import MapComponent from "../components/MapComponent";
+import { Container, Row, Col, Form, Button, Card, InputGroup, DropdownButton, Dropdown } from 'react-bootstrap';
+
 
 const Home = ({trails, setTrails, isMapLoaded, userLocation}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
-  const [sortOption, setSortOption] = useState("");
-  const [trailLocation, setTrailLocation] = useState({ city: "", country: "" });
+  const [sortOption, setSortOption] = useState("Sort by");
   const [weather, setWeather] = useState({ temp: 0, description: "" });
 
   const router = useNavigate();
 
-  
-
-  
-
-  // fetch the city and country of trail location using the google maps api
-  useEffect(() => {}, []);
-
   // fetch the weather of the trail location using the open weather map api
   useEffect(() => {}, []);
 
-
-  // filter the trails based on filter options
-  // filter options: difficulty, length, rating, search
-//   const filterTrails = async (filters) => {
-//     let filteredTrails = [...trails];
-  
-//     if (filters.name) {
-//       if (filters.name === "difficulty") {
-//         filteredTrails = filteredTrails.filter((trail) => trail.difficulty === 1);
-//       } else if (filters.name === "length") {
-//         filteredTrails = filteredTrails.filter((trail) => trail.length < 5);
-//       } else if (filters.name === "rating") {
-//         filteredTrails = filteredTrails.filter((trail) => trail.rating > 4);
-//       }
-//     }
-  
-//     if (filters.search) {
-//       const searchLower = filters.search.toLowerCase();
-//       filteredTrails = filteredTrails.filter((trail) => 
-//         trail.name.toLowerCase().includes(searchLower)
-//       );
-//     }
-  
-//     setTrails(filteredTrails);
-//   };
-
   // sort the trails based on sort options
   // sort options: rating, difficulty, length, recently added, upvotes, most visits
-  const sortTrails = async (name) => {
-      let sortedTrails = [...trails] ;
-    if (name === "difficulty") {
-      sortedTrails = sortedTrails.sort((a, b) => b.difficulty - a.difficulty);
-    } else if (name === "length") {
-      sortedTrails = sortedTrails.sort((a, b) => b.length - a.length);
-    } else if (name === "rating") {
-      sortedTrails = sortedTrails.sort((a, b) => b.rating - a.rating);
-    } else if (name === "recently added") {
-      sortedTrails = sortedTrails.sort((a, b) => b.created_at - a.created_at);
-    } else if (name === "upvotes") {
-      sortedTrails = sortedTrails.sort((a, b) => b.upvotes - a.upvotes);
-    } else if (name === "most visits") {
-      sortedTrails = sortedTrails.sort((a, b) => b.visits - a.visits);
+  const sortTrails = (sortKey) => {
+    let sortedTrails = [...trails];
+    switch (sortKey) {
+      case "difficulty":
+        sortedTrails.sort((a, b) => b.difficulty - a.difficulty);
+        break;
+      case "length":
+        sortedTrails.sort((a, b) => b.length - a.length);
+        break;
+      case "rating":
+        sortedTrails.sort((a, b) => b.rating - a.rating);
+        break;
+      case "recently added":
+        sortedTrails.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        break;
+      case "upvotes":
+        sortedTrails.sort((a, b) => b.upvotes - a.upvotes);
+        break;
+      case "most visits":
+        sortedTrails.sort((a, b) => b.visits - a.visits);
+        break;
+      default:
+        break;
     }
     setTrails(sortedTrails);
+    setSortOption(sortKey.charAt(0).toUpperCase() + sortKey.slice(1)); // Update sort option to reflect current sort
   };
 
   return (
     <>
-    <h1>Home</h1>
-    <MapComponent isMapLoaded = {isMapLoaded} trails={trails} userLocation={userLocation}/>
-    {/* filters and trails list */}
-    <div className="filters">
-      <input
-        type="text"
-        placeholder="Search trails"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      {/* maybe add filters for if the distance away */}
-      <select
-        value={sortOption}
-        onChange={(e) => setSortOption(e.target.value)}
-      >
-        <option value="">Sort by</option>
-        <option value="difficulty">Difficulty</option>
-        <option value="length">Length</option>
-        <option value="rating">Rating</option>
-        <option value="recently added">Recently Added</option>
-        <option value="upvotes">Upvotes</option>
-        <option value="most visits">Most Visits</option>
-      </select>
-      <button onClick={() => sortTrails(sortOption)}>Sort</button>
-      <button onClick={() => setSortOption("")}>Reset</button>
-      <button onClick={() => router("/add-trail")}>Add Trail</button>
-    </div>
-    <div className="trails">
-      {trails && trails.length && trails.filter(trail => {
-        return(
+      <MapComponent isMapLoaded={isMapLoaded} trails={trails} userLocation={userLocation} />
+      <Container fluid>
+        <Row>
+        <Col md={12}>
+            <InputGroup className="mb-3">
+              <Form.Control
+                placeholder="Search trails"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <DropdownButton
+                as={InputGroup.Append}
+                variant="outline-secondary"
+                title={sortOption}
+                id="input-group-dropdown-2"
+                onSelect={sortTrails}
+              >
+                <Dropdown.Item eventKey="difficulty">Difficulty</Dropdown.Item>
+                <Dropdown.Item eventKey="length">Length</Dropdown.Item>
+                <Dropdown.Item eventKey="rating">Rating</Dropdown.Item>
+                <Dropdown.Item eventKey="recently added">Recently Added</Dropdown.Item>
+                <Dropdown.Item eventKey="upvotes">Upvotes</Dropdown.Item>
+                <Dropdown.Item eventKey="most visits">Most Visits</Dropdown.Item>
+              </DropdownButton>
+              <Button variant="outline-secondary" onClick={() => {
+                setSortOption("Sort by");
+                setTrails([...trails]); // Reset sort
+              }}>Reset</Button>
+              <Button variant="success" onClick={() => router("/add-trail")}>Add Trail</Button>
+            </InputGroup>
+          </Col>
+        </Row>
+        <Row>
+          {trails && trails.length > 0 && trails.filter(trail =>
             searchQuery.toLowerCase() === "" ? trail : trail.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      }).
-      map((trail) => (
-        <TrailCard key={trail.id} trail={trail} userLocation={userLocation} />
-      ))}
-    </div>
+          ).map(trail => (
+            <Row key={trail.id}>
+              <TrailCard trail={trail} userLocation={userLocation} />
+            </Row>
+          ))}
+        </Row>
+      </Container>
     </>
   );
 };

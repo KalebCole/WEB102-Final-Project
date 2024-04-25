@@ -8,7 +8,6 @@ const MapComponent = ({ isMapLoaded, trails, userLocation }) => {
 
   return (
     <div className="map">
-      <h2>Map</h2>
       {isMapLoaded ? (
         <GoogleMap
           mapContainerStyle={{ height: "400px", width: "800px" }}
