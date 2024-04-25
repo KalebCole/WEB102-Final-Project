@@ -1,55 +1,80 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import {supabase} from '../client';
+import { supabase } from '../client';
+import { Button, Container, Form, Row, Col } from 'react-bootstrap';
 
 const VisitAdd = () => {
-    const {id} = useParams();
+    const { id } = useParams();
     const router = useNavigate();
 
     const [visit, setVisit] = useState({
         name: '',
-        date: null,
+        date: '',
         comment: ''
     });
 
     const handleChange = (e) => {
-        setVisit({...visit, [e.target.name]: e.target.value});
+        setVisit({ ...visit, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(id)
-        // insert visit to supabase
-        const createVisit = async () => {
-            const {data, error} = await supabase.from('Visits').insert({
-                trail_id: id,
-                name: visit.name,
-                date: visit.date,
-                comment: visit.comment
-            });
-            if (error) {
-                console.error('Error creating visit: ', error.message);
-            } else {
-                router(`/details/${id}`);
-            }
-        };
-        createVisit();
+        const { data, error } = await supabase.from('Visits').insert({
+            trail_id: id,
+            name: visit.name,
+            date: visit.date,
+            comment: visit.comment
+        });
+        if (error) {
+            console.error('Error creating visit: ', error.message);
+        } else {
+            router(`/details/${id}`);
+        }
     };
-    
-  return (
-    <div>
-      <h1>Add Visit</h1>
-      <form>
-        <label htmlFor="name">Name</label>
-        <input type="text" id="name" name="name" onChange={handleChange} />
-        <label htmlFor="date">Date</label>
-        <input type="date" id="date" name="date" onChange={handleChange}/>
-        <label htmlFor="comment">Comment</label>
-        <textarea id="comment" name="comment" onChange={handleChange}></textarea>
-        <button type="submit" onClick={handleSubmit}>Submit</button>
-      </form>
-    </div>
-  )
+
+    return (
+        <Container className="my-4">
+            <Row>
+                <Col md={{ span: 8, offset: 2 }}>
+                    <h1>Add Visit</h1>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group controlId="formVisitName">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="name"
+                                value={visit.name}
+                                onChange={handleChange}
+                                placeholder="Enter your name"
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formVisitDate">
+                            <Form.Label>Date</Form.Label>
+                            <Form.Control
+                                type="date"
+                                name="date"
+                                value={visit.date}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formVisitComment">
+                            <Form.Label>Comment</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                name="comment"
+                                value={visit.comment}
+                                onChange={handleChange}
+                                rows={3}
+                            />
+                        </Form.Group>
+                        <Button variant="primary" type="submit">Submit</Button>
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
+    );
 };
 
 export default VisitAdd;
