@@ -52,7 +52,6 @@ const Home = ({trails, setTrails, isMapLoaded, userLocation}) => {
   // sort options: rating, difficulty, length, recently added, upvotes, most visits
   const sortTrails = async (name) => {
       let sortedTrails = [...trails] ;
-      console.log(sortedTrails)
     if (name === "difficulty") {
       sortedTrails = sortedTrails.sort((a, b) => b.difficulty - a.difficulty);
     } else if (name === "length") {
@@ -81,18 +80,7 @@ const Home = ({trails, setTrails, isMapLoaded, userLocation}) => {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      {/* <select
-        value={filterOption}
-        onChange={(e) => setFilterOption(e.target.value)}
-      >
-        <option value="">Filter by</option>
-        <option value="difficulty">Difficulty</option>
-        <option value="length">Length</option>
-        <option value="rating">Rating</option>
-      </select>
-      <button onClick={() => filterTrails({ name: filterOption, search: searchQuery })}>
-        Filter
-      </button> */}
+      {/* maybe add filters for if the distance away */}
       <select
         value={sortOption}
         onChange={(e) => setSortOption(e.target.value)}

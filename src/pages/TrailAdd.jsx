@@ -24,9 +24,6 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
   });
   const router = useNavigate();
 
-  useEffect(() => {
-    console.log(mapLocation); // This will log the updated location after state updates
-  }, [mapLocation]);
 
   // handle the geocoding of the address
   const handleGeocode = async (e) => {
@@ -37,7 +34,6 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
       )}&key=${import.meta.env.VITE_REACT_APP_GOOGLE_MAP_KEY}`
     );
     const data = await response.json();
-    console.log(data);
     if (data.status === "OK" && data.results.length > 0) {
       const location = data.results[0].geometry.location;
       setTrail({
@@ -58,7 +54,6 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
       ...trail,
       location: { lat: e.latLng.lat(), lng: e.latLng.lng() },
     });
-    console.log(mapLocation);
   };
 
   const createTrail = async (e) => {

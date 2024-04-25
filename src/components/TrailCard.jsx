@@ -6,6 +6,7 @@ const TrailCard = ({ trail, userLocation }) => {
         <img src={trail.image_url} alt={trail.name} style={{width: "200px"} } />
         <h2>{trail.name}</h2>
         <p>{trail.difficulty}</p>
+        <p>Miles Away: {trail.distanceAway.toFixed(2)}</p>
         <p>{trail.length} miles</p>
         <p>{trail.rating} stars</p>
         <p>{trail.visits} visits</p>
