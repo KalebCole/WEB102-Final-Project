@@ -1,20 +1,34 @@
 import { supabase } from '../client';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import {
+    GoogleMap,
+    LoadScript,
+    Marker,
+    useJsApiLoader,
+  } from "@react-google-maps/api";
 
 const TrailAdd = () => {
     const [trail, setTrail] = useState({
         name: '',
         description: '',
         length: '',
-        difficulty: ''
-        
+        difficulty: '',
+        location: {}  
     })
+    const [selectedPosition, setSelectedPosition] = useState(null);
+    const [userLocation, setUserLocation] = useState(null);
     const router = useNavigate();
 
     const handleChange = (e) => {
         setTrail({...trail, [e.target.name]: e.target.value});
     }
+    const onMapClick = (e) => {
+        setSelectedPosition({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+        // Update the location input field if necessary
+        setTrail({...trail, location: { lat: e.latLng.lat(), long: e.latLng.lng() }});
+        console.log(trail.location);
+      };
 
     const createTrail = async (e) => {
         e.preventDefault();
@@ -38,6 +52,10 @@ const TrailAdd = () => {
             <input type="text" id="name" name="name" onChange={handleChange} />
             <label htmlFor="description">Description</label>
             <textarea id="description" name="description" onChange={handleChange}></textarea>
+            <label htmlFor="location">Location</label>
+            <GoogleMap mapContainerStyle={{ height: "400px", width: "800px" }} center={{ lat: 45.4211, lng: -75.6903 }} zoom={10} onClick={onMapClick}>
+                {selectedPosition && <Marker position={selectedPosition} />}
+            </GoogleMap>
             <label htmlFor="length">Length</label>
             <input type="text" id="length" name="length" onChange={handleChange}/>
             <label htmlFor="difficulty">Difficulty</label>
