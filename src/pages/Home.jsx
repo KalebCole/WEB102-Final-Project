@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import {useNavigate} from 'react-router-dom';
 import TrailCard from "../components/TrailCard";
 import MapComponent from "../components/MapComponent";
-import { Container, Row, Col, Form, Button, Card, InputGroup, DropdownButton, Dropdown } from 'react-bootstrap';
+import Trail1 from '../assets/images/trail1.jpeg';
+import Trail2 from '../assets/images/trail2.jpg';
+import Trail3 from '../assets/images/trail3.jpg';
+import { Container, Row, Col, Form, Button, InputGroup, DropdownButton, Dropdown, Carousel } from 'react-bootstrap';
 
 
 const Home = ({trails, setTrails, isMapLoaded, userLocation}) => {
@@ -48,8 +51,49 @@ const Home = ({trails, setTrails, isMapLoaded, userLocation}) => {
 
   return (
     <>
+      <Carousel className="mb-3">
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src={Trail1}
+            alt="First slide"
+            style={{ maxHeight: "300px", objectFit: "cover" }}
+          />
+          <Carousel.Caption>
+            <h3>Find Your Next Adventure</h3>
+            <p>Explore the best trails around you or plan your next hiking trip!</p>
+            <Button variant="primary" onClick={() => router("/add-trail")}>Add Trail</Button>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src={Trail2}
+            alt="Second slide"
+            style={{ maxHeight: "300px", objectFit: "cover" }}
+          />
+          <Carousel.Caption>
+            <h3>Find Your Next Adventure</h3>
+            <p>Explore the best trails around you or plan your next hiking trip!</p>
+            <Button variant="primary" onClick={() => router("/add-trail")}>Add Trail</Button>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src={Trail3}
+            alt="Third slide"
+            style={{ maxHeight: "300px", objectFit: "cover" }}
+          />
+          <Carousel.Caption>
+            <h3>Find Your Next Adventure</h3>
+            <p>Explore the best trails around you or plan your next hiking trip!</p>
+            <Button variant="primary" onClick={() => router("/add-trail")}>Add Trail</Button>
+          </Carousel.Caption>
+        </Carousel.Item>
+      </Carousel>
       <MapComponent isMapLoaded={isMapLoaded} trails={trails} userLocation={userLocation} />
-      <Container fluid>
+      <Container fluid className="mt-5">
         <Row>
         <Col md={12}>
             <InputGroup className="mb-3">
