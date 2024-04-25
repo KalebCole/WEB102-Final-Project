@@ -8,7 +8,7 @@ import {
     useJsApiLoader,
   } from "@react-google-maps/api";
 
-const TrailAdd = () => {
+const TrailAdd = ({isMapLoaded, userLocation}) => {
     const [trail, setTrail] = useState({
         name: '',
         description: '',
@@ -17,7 +17,6 @@ const TrailAdd = () => {
         location: {}  
     })
     const [selectedPosition, setSelectedPosition] = useState(null);
-    const [userLocation, setUserLocation] = useState(null);
     const router = useNavigate();
 
     const handleChange = (e) => {
@@ -53,9 +52,14 @@ const TrailAdd = () => {
             <label htmlFor="description">Description</label>
             <textarea id="description" name="description" onChange={handleChange}></textarea>
             <label htmlFor="location">Location</label>
-            <GoogleMap mapContainerStyle={{ height: "400px", width: "800px" }} center={{ lat: 45.4211, lng: -75.6903 }} zoom={10} onClick={onMapClick}>
+            {
+                isMapLoaded ? <GoogleMap mapContainerStyle={{ height: "400px", width: "800px" }} center={{ lat: 45.4211, lng: -75.6903 }} zoom={10} onClick={onMapClick}>
                 {selectedPosition && <Marker position={selectedPosition} />}
             </GoogleMap>
+            : <p>Loading map...</p>
+
+            }
+            
             <label htmlFor="length">Length</label>
             <input type="text" id="length" name="length" onChange={handleChange}/>
             <label htmlFor="difficulty">Difficulty</label>

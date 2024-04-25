@@ -4,12 +4,11 @@ import { supabase } from "../client";
 import TrailCard from "../components/TrailCard";
 import MapComponent from "../components/MapComponent";
 
-const Home = () => {
+const Home = ({isMapLoaded, userLocation}) => {
   const [trails, setTrails] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
   const [sortOption, setSortOption] = useState("");
-  const [userLocation, setUserLocation] = useState({});
   const [trailLocation, setTrailLocation] = useState({ city: "", country: "" });
   const [weather, setWeather] = useState({ temp: 0, description: "" });
 
@@ -28,19 +27,7 @@ const Home = () => {
     fetchTrails();
   }, []);
 
-  // fetch the user's location using the browser's geolocation API
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setUserLocation({
-          lat: position.coords.latitude,
-          long: position.coords.longitude,
-        });
-      });
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-    }
-  }, []);
+  
 
   // fetch the city and country of trail location using the google maps api
   useEffect(() => {}, []);
@@ -98,7 +85,7 @@ const Home = () => {
   return (
     <>
     <h1>Home</h1>
-    <MapComponent trails={trails} userLocation={userLocation}/>
+    <MapComponent isMapLoaded = {isMapLoaded} trails={trails} userLocation={userLocation}/>
     {/* filters and trails list */}
     <div className="filters">
       <input
