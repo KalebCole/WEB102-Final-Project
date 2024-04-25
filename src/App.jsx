@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react'
 import {Home, TrailEdit, TrailDetail, TrailAdd, VisitAdd} from './pages'
 import { Link, useRoutes } from "react-router-dom";
 import { useLoadScript } from "@react-google-maps/api";
+import { supabase } from "./client";
 
 function App() {
+  const [trails, setTrails] = useState([]);
   const [userLocation, setUserLocation] = useState({});
 
 
@@ -26,8 +28,21 @@ function App() {
     }
   }, []);
 
+  // fetch the trails from the supabase databse
+  useEffect(() => {
+    const fetchTrails = async () => {
+      const { data, error } = await supabase.from("Trails").select("*");
+      if (error) {
+        console.error("Error fetching trails: ", error.message);
+      } else {
+        setTrails(data);
+      }
+    };
+    fetchTrails();
+  }, []);
+
   const routes = useRoutes([
-    { path: "/", element: <Home isMapLoaded={isLoaded} userLocation={userLocation}/> },
+    { path: "/", element: <Home trails={trails} setTrails={setTrails} isMapLoaded={isLoaded} userLocation={userLocation}/> },
     { path: "add-trail", element: <TrailAdd isMapLoaded={isLoaded} userLocation={userLocation}/>},
     { path: "/edit/:id", element: <TrailEdit /> },
     { path: "/details/:id", element: <TrailDetail /> },

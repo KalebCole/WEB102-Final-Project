@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import {useNavigate} from 'react-router-dom';
-import { supabase } from "../client";
 import TrailCard from "../components/TrailCard";
 import MapComponent from "../components/MapComponent";
 
-const Home = ({isMapLoaded, userLocation}) => {
-  const [trails, setTrails] = useState([]);
+const Home = ({trails, setTrails, isMapLoaded, userLocation}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
   const [sortOption, setSortOption] = useState("");
@@ -14,18 +12,7 @@ const Home = ({isMapLoaded, userLocation}) => {
 
   const router = useNavigate();
 
-  // fetch the trails from the supabase databse
-  useEffect(() => {
-    const fetchTrails = async () => {
-      const { data, error } = await supabase.from("Trails").select("*");
-      if (error) {
-        console.error("Error fetching trails: ", error.message);
-      } else {
-        setTrails(data);
-      }
-    };
-    fetchTrails();
-  }, []);
+  
 
   
 
@@ -123,7 +110,7 @@ const Home = ({isMapLoaded, userLocation}) => {
       <button onClick={() => router("/add-trail")}>Add Trail</button>
     </div>
     <div className="trails">
-      {trails.length && trails.filter(trail => {
+      {trails && trails.length && trails.filter(trail => {
         return(
             searchQuery.toLowerCase() === "" ? trail : trail.name.toLowerCase().includes(searchQuery.toLowerCase())
         )
