@@ -180,6 +180,10 @@ const TrailAdd = ({ isMapLoaded, userLocation, setTrails }) => {
           <Form.Label>Difficulty</Form.Label>
           <Form.Control type="text" name="difficulty" onChange={handleChange} />
         </Form.Group>
+        <Form.Group controlId="rating">
+          <Form.Label>Rating</Form.Label>
+          <Form.Control type="text" name="rating" onChange={handleChange} />
+        </Form.Group>
         <Form.Group controlId="formImage">
         <Form.Label>Image:</Form.Label>
         <Form.Control type="file" onChange={handleImageChange} />

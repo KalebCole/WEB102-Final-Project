@@ -152,6 +152,7 @@ const TrailEdit = ({ isMapLoaded, userLocation, trails, setTrails }) => {
       let newTrails = [...trails];
       newTrails = newTrails.filter((trail) => trail.id !== id);
       setTrails(newTrails);
+      router("/");
     }
   };
 

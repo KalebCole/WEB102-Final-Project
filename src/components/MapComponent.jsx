@@ -17,11 +17,15 @@ const MapComponent = ({ isMapLoaded, trails, userLocation }) => {
             zoom={10}
           >
             {trails && trails.map((trail) => (
-              <Marker
-                key={trail.id}
-                position={{ lat: trail.location.lat, lng: trail.location.lng }}
-                onClick={() => setSelectedTrail(trail)}
-              />
+              console.log(trail),
+              trail.location && (
+                <Marker
+                  key={trail.id}
+                  position={{ lat: trail.location.lat, lng: trail.location.lng }}
+                  onClick={() => setSelectedTrail(trail)}
+                />
+
+              )
             ))}
 
             {selectedTrail && (
