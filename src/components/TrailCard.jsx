@@ -11,6 +11,7 @@ const TrailCard = ({ trail, userLocation, visits }) => {
         setVisitsForTrail(visitsForTrail);
     }, [visits, trail]);
 
+    
 
     return (
         <Card className="mb-3" onClick={() => router(`/details/${trail.id}`)} style={{ cursor: 'pointer' }}>

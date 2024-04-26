@@ -1,5 +1,7 @@
+
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/main.scss';
 import { useEffect, useState } from 'react';
 import { Home, TrailEdit, TrailDetail, TrailAdd, VisitAdd } from './pages';
 import { useRoutes } from "react-router-dom";
@@ -113,20 +115,20 @@ function App() {
 
     return (
         <>
-            <Navbar bg="dark" variant="dark" expand="lg">
-                <Container>
-                    <Navbar.Brand href="/">Trail Connect</Navbar.Brand>
-                    {/* home link */}
-                    <Nav className="me-auto">
-                        <Nav.Link href="/">Home</Nav.Link>
-                    </Nav>
-                </Container>
-            </Navbar>
+          <Navbar className="navbar-custom" expand="lg">
             <Container>
-                {routes}
+              <Navbar.Brand href="/">Trail Connect</Navbar.Brand>
+              {/* home link */}
+              <Nav className="me-auto">
+                <Nav.Link href="/">Home</Nav.Link>
+              </Nav>
             </Container>
+          </Navbar>
+          <Container>
+            {routes}
+          </Container>
         </>
-    );
-}
-
+      );
+    }
+          
 export default App;

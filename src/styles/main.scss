@@ -1,0 +1,62 @@
+// Define your color palette
+$color-green-dark: #356859;  // Dark green for headings and important elements
+$color-green-medium: #37966f;  // Medium green for accents and active elements
+$color-green-light: #b9e4c9;  // Light green for backgrounds and cards
+$color-brown-dark: #5c3d2e;  // Dark brown for text and critical elements
+$color-brown-light: #8c5e58;  // Light brown for less important text
+$color-blue-sky: #81c3d7;  // Sky blue for elements needing a pop
+$color-sun-yellow: #e8c07d;  // Sun yellow for notifications and highlights
+$color-cloud-white: #f4f4f9;  // White like clouds for background and space
+$color-earth-grey: #829399;  // Grey for neutral, disabled, or secondary elements
+
+// General background of the app
+$background-color: $color-green-dark;
+
+// Text color
+$text-color: $color-brown-light;
+
+// Component background, such as cards
+$component-bg: $color-cloud-white;
+
+// Borders and separators
+$border-color: $color-earth-grey;
+
+// Primary button color
+$primary-button-bg: $color-green-medium;
+
+// Hover state for primary button
+$primary-button-hover-bg: darken($color-green-medium, 10%);
+
+// Danger and delete buttons
+$danger-button-bg: $color-brown-dark;
+
+// Apply the defined color variables to Bootstrap variables
+$body-bg: $background-color;
+$body-color: $text-color;
+$link-color: $color-green-dark;
+$link-hover-color: lighten($link-color, 10%);
+$card-bg: $component-bg;
+$border-color: $border-color;
+$btn-primary-bg: $primary-button-bg;
+$btn-primary-hover-bg: $primary-button-hover-bg;
+$btn-danger-bg: $danger-button-bg;
+
+
+// Import Bootstrap styles after variables definitions
+@import 'bootstrap/scss/bootstrap';
+
+
+// Custom styles
+
+// Navbar   
+.navbar-custom {
+    background-color: $color-brown-dark;
+    .navbar-brand, .nav-link {
+      color: $color-green-light;
+      
+      &:hover {
+        color: lighten($color-green-light, 10%);
+      }
+    }
+  }
+  
