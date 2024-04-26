@@ -9,7 +9,7 @@ import { Container, Row, Col, Form, Button, InputGroup, DropdownButton, Dropdown
 
 
 // eslint-disable-next-line react/prop-types
-const Home = ({trails, setTrails, isMapLoaded, userLocation}) => {
+const Home = ({trails, setTrails, isMapLoaded, userLocation, visits}) => {
   const [searchQuery, setSearchQuery] = useState("");
   // const [filterOption, setFilterOption] = useState("");
   const [sortOption, setSortOption] = useState("Sort by");
@@ -130,7 +130,7 @@ const Home = ({trails, setTrails, isMapLoaded, userLocation}) => {
             searchQuery.toLowerCase() === "" ? trail : trail.name.toLowerCase().includes(searchQuery.toLowerCase())
           ).map(trail => (
             <Row key={trail.id}>
-              <TrailCard trail={trail} userLocation={userLocation} />
+              <TrailCard trail={trail} userLocation={userLocation} visits={visits}/>
             </Row>
           ))}
         </Row>

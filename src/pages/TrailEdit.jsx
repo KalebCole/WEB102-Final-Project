@@ -2,17 +2,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../client";
 import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
-import {
-  GoogleMap,
-  Marker,
-} from "@react-google-maps/api";
+import { GoogleMap, Marker } from "@react-google-maps/api";
 
-const TrailEdit = ({ isMapLoaded, userLocation }) => {
+const TrailEdit = ({ isMapLoaded, userLocation, trails, setTrails }) => {
   const { id } = useParams();
   const router = useNavigate();
   const [address, setAddress] = useState("");
   const [mapLocation, setMapLocation] = useState(
-    {lat: 37.7749, lng: -122.4194} // Default to San Francisco, or any valid location
+    { lat: 37.7749, lng: -122.4194 } // Default to San Francisco, or any valid location
   );
   const [trail, setTrail] = useState({
     name: "",
@@ -22,7 +19,7 @@ const TrailEdit = ({ isMapLoaded, userLocation }) => {
     rating: "",
     image_url: "",
   });
-
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   useEffect(() => {
     // when the trail updates, update the map location
@@ -36,8 +33,8 @@ const TrailEdit = ({ isMapLoaded, userLocation }) => {
     }
   };
 
-   // handle the geocoding of the address
-   const handleGeocode = async (e) => {
+  // handle the geocoding of the address
+  const handleGeocode = async (e) => {
     e.preventDefault();
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
@@ -122,6 +119,11 @@ const TrailEdit = ({ isMapLoaded, userLocation }) => {
     if (error) {
       console.error("Error updating trail: ", error.message);
     } else {
+      setTrails((trails) => {
+        // Update the trail in the parent component
+        const updatedTrails = trails.map((t) => (t.id === id ? data[0] : t));
+        return updatedTrails;
+      });
       router(`/details/${id}`);
     }
   };
@@ -131,11 +133,25 @@ const TrailEdit = ({ isMapLoaded, userLocation }) => {
     if (!confirm("Are you sure you want to delete this trail?")) {
       return;
     }
+    // Delete visits associated with the trail
+    const { data: visitData, error: visitError } = await supabase
+      .from("Visits")
+      .delete()
+      .eq("trail_id", id);
+
+    if (visitError) {
+      console.error("Error deleting visits: ", visitError.message);
+    } else {
+      console.log(`Deleted visits.`);
+    }
+
     const { data, error } = await supabase.from("Trails").delete().eq("id", id);
     if (error) {
       console.error("Error deleting trail: ", error.message);
     } else {
-      router("/");
+      let newTrails = [...trails];
+      newTrails = newTrails.filter((trail) => trail.id !== id);
+      setTrails(newTrails);
     }
   };
 
@@ -175,29 +191,40 @@ const TrailEdit = ({ isMapLoaded, userLocation }) => {
                   />
                 </Form.Group>
                 <Row>
-            <Form.Label>Address</Form.Label>
-            <Col>
-              <Form.Control type="text" name="address" onChange={(e) => setAddress(e.target.value)} />
-            </Col>
-            <Col xs="auto">
-              <Button variant="primary" onClick={handleGeocode}>Find on the map!</Button>
-            </Col>
-          </Row>
-        <Form.Group controlId="location">
-          {isMapLoaded ? (
-            <GoogleMap
-              mapContainerStyle={{ height: "400px", width: "100%" }}
-              center={{ lat: mapLocation.lat, lng: mapLocation.lng }}
-              zoom={10}
-            >
-              <Marker
-                position={{ lat: mapLocation.lat, lng: mapLocation.lng }}
-              />
-            </GoogleMap>
-          ) : (
-            <p>Loading map...</p>
-          )}
-        </Form.Group>
+                  <Form.Label>Address</Form.Label>
+                  <Col>
+                    <Form.Control
+                      type="text"
+                      name="address"
+                      onChange={(e) => setAddress(e.target.value)}
+                    />
+                  </Col>
+                  <Col xs="auto">
+                    <Button variant="primary" onClick={handleGeocode}>
+                      Find on the map!
+                    </Button>
+                  </Col>
+                </Row>
+                <Form.Group controlId="location">
+                  {isMapLoaded ? (
+                    <GoogleMap
+                      mapContainerStyle={{ height: "400px", width: "100%" }}
+                      center={{ lat: mapLocation.lat, lng: mapLocation.lng }}
+                      zoom={10}
+                      onClick={onMapClick}
+                    >
+                      <Marker
+                        key={Math.random()}
+                        position={{
+                          lat: mapLocation.lat,
+                          lng: mapLocation.lng,
+                        }}
+                      />
+                    </GoogleMap>
+                  ) : (
+                    <p>Loading map...</p>
+                  )}
+                </Form.Group>
                 <Form.Group controlId="formTrailLength">
                   <Form.Label>Length (miles)</Form.Label>
                   <Form.Control

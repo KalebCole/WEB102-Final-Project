@@ -1,8 +1,16 @@
 import { Card, Row, Col, Button } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-const TrailCard = ({ trail, userLocation }) => {
+const TrailCard = ({ trail, userLocation, visits }) => {
+    const [visitsForTrail, setVisitsForTrail] = useState([]);
     const router = useNavigate();
+
+    useEffect(() => {
+        let visitsForTrail = visits.filter((visit) => visit.trail_id === trail.id);
+        setVisitsForTrail(visitsForTrail);
+    }, [visits, trail]);
+
 
     return (
         <Card className="mb-3" onClick={() => router(`/details/${trail.id}`)} style={{ cursor: 'pointer' }}>
@@ -13,9 +21,6 @@ const TrailCard = ({ trail, userLocation }) => {
                 <Col md={8}>
                     <Card.Body>
                         <Card.Title>{trail.name}</Card.Title>
-                        <Card.Text>
-                            <strong>Location:</strong> {trail.location.city}
-                        </Card.Text>
                         <Card.Text>
                             <strong>Distance Away:</strong> {trail.distanceAway ? trail.distanceAway.toFixed(2) + ' miles' : 'N/A'}
                         </Card.Text>
@@ -29,7 +34,7 @@ const TrailCard = ({ trail, userLocation }) => {
                             <strong>Rating:</strong> {trail.rating} stars
                         </Card.Text>
                         <Card.Text>
-                            <strong>Visits:</strong> {trail.visits}
+                            <strong>Visits:</strong> {visitsForTrail && visitsForTrail.length ? visitsForTrail.length : 0}
                         </Card.Text>
                         <Card.Text>
                             <strong>Upvotes:</strong> {trail.upvotes}

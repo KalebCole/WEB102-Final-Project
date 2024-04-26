@@ -7,7 +7,7 @@ import {
   Marker,
 } from "@react-google-maps/api";
 
-const TrailAdd = ({ isMapLoaded, userLocation }) => {
+const TrailAdd = ({ isMapLoaded, userLocation, setTrails }) => {
   const [address, setAddress] = useState("");
   const [mapLocation, setMapLocation] = useState(
     userLocation.lat && userLocation.lng
@@ -29,11 +29,6 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
     }
   };
 
-  //update the trail markers when the maplocation changes
-  useEffect(() => {
-    // rerender the map
-
-  }, [mapLocation]);
   // handle the geocoding of the address
   const handleGeocode = async (e) => {
     e.preventDefault();
@@ -58,59 +53,85 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
   };
   const onMapClick = (e) => {
     setMapLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
-    // Update the location input field if necessary
     setTrail({
       ...trail,
       location: { lat: e.latLng.lat(), lng: e.latLng.lng() },
     });
-    console.log(trail.location)
+    console.log(trail.location);
+    console.log(mapLocation);
   };
 
   const createTrail = async (e) => {
     e.preventDefault();
-    // i need to upload the image to my supabase storage
+
+    // Check if any required fields are missing and handle them appropriately
+    if (!trail.name || !trail.description || !trail.difficulty || !trail.length) {
+        console.error("Missing required trail information.");
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    let imageUrl = ""; // Default empty string if no image is uploaded
+
+    // Proceed with image upload if an image is present
     if (trail.image) {
-        const fileExt = trail.image.name.split('.').pop();
-        const fileName = `trail-${Date.now()}.${fileExt}`; // Ensure a unique filename based on the timestamp
-        const filePath = `${fileName}`; // Updated filePath
-    
-        // Upload image to Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("Trail Images")
-          .upload(filePath, trail.image);
-    
-        if (uploadError) {
-          console.error("Upload error:", uploadError);
-          return;
+        try {
+            const fileExt = trail.image.name.split('.').pop();
+            const fileName = `trail-${Date.now()}.${fileExt}`; // Ensure a unique filename based on the timestamp
+            const filePath = `${fileName}`; // Updated filePath
+
+            // Upload image to Supabase Storage
+            const { data: uploadData, error: uploadError } = await supabase.storage
+              .from("Trail Images")
+              .upload(filePath, trail.image);
+
+            if (uploadError) {
+              throw new Error(uploadError.message);
+            }
+
+            // Manually construct the public URL
+            imageUrl = `https://qquddfzyzzxocsqqlgur.supabase.co/storage/v1/object/public/Trail Images/${filePath}`;
+            imageUrl = encodeURI(imageUrl);
+
+        } catch (error) {
+            console.error("Failed to upload image:", error);
+            alert("Failed to upload image. Please try again.");
+            return;
         }
-    
-        // Manually construct the public URL
-        const publicURL = `https://qquddfzyzzxocsqqlgur.supabase.co/storage/v1/object/public/Trail Images/${filePath}`;
-        const encodedPublicURL = encodeURI(publicURL);
-  
-        const locationObj = {"lat": location.lat, "lng": location.lng};
-        // Insert a row in your database table
+    }
+
+    // Ensure location is always an object with lat and lng
+    const locationObj = trail.location && trail.location.lat && trail.location.lng ? 
+                        { lat: trail.location.lat, lng: trail.location.lng } : 
+                        { lat: null, lng: null }; // Handle cases where location might be undefined
+
+    // Insert a row in your database table
+    try {
         const { data: insertData, error: insertError } = await supabase
           .from('Trails')
           .insert([
             {
-              image_url: encodedPublicURL,
-                name: trail.name,
+              image_url: imageUrl,
+              name: trail.name || "Unnamed Trail", // Default name if not provided
               location: locationObj,
-                description: trail.description,
-                difficulty: trail.difficulty,
-                length: trail.length
+              description: trail.description || "No description provided.", // Default description
+              difficulty: trail.difficulty || "Not specified", // Default difficulty
+              length: trail.length || "0", // Default length
             },
           ], { returning: 'minimal' });
-    
+
         if (insertError) {
-          console.error('Insert error:', insertError);
-          return;
+            throw new Error(insertError.message);
         }
-    
-      router("/");
+        setTrails((prevTrails) => [...prevTrails, insertData]); // Update the trails state with the new trail
+        console.log("Trail successfully added!");
+        router("/"); // Navigate to home page after successful insert
+    } catch (error) {
+        console.error('Error creating trail:', error);
+        alert('Failed to create trail. Please check the data provided.');
     }
-  };
+};
+
   return (
     <>
     <Container>
@@ -125,7 +146,7 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
           <Form.Control as="textarea" name="description" onChange={handleChange} />
         </Form.Group>
         <Row>
-            <Form.Label>Address</Form.Label>
+            <Form.Label>Location</Form.Label>
             <Col>
               <Form.Control type="text" name="address" onChange={(e) => setAddress(e.target.value)} />
             </Col>
@@ -142,8 +163,9 @@ const TrailAdd = ({ isMapLoaded, userLocation }) => {
               onClick={onMapClick}
             >
               <Marker
-                key={1}
-                position={{ lat: mapLocation.lat, lng: mapLocation.lng }}
+              // generate a unique key for the marker using a guarenteed unique value from random numbers
+                key={Math.random()}
+                position={mapLocation}
               />
             </GoogleMap>
           ) : (
