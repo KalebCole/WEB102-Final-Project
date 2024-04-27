@@ -129,7 +129,7 @@ function App() {
         }
     };
     const routes = useRoutes([
-        { path: "/", element: <Home trails={trails} isMapLoaded={isLoaded} userLocation={userLocation} visits={visits} /> },
+        { path: "/", element: <Home trails={trails} setTrails={setTrails} isMapLoaded={isLoaded} userLocation={userLocation} visits={visits} /> },
         { path: "/add-trail", element: <TrailAdd isMapLoaded={isLoaded} userLocation={userLocation} setTrails={setTrails} /> },
         { path: "/edit/:id", element: <TrailEdit isMapLoaded={isLoaded} userLocation={userLocation} trails={trails} setTrails={setTrails} deleteTrail={deleteTrail} /> },
         { path: "/details/:id", element: <TrailDetail /> },

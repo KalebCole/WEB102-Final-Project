@@ -45,7 +45,7 @@ const TrailDetail = () => {
         <Container className="my-4">
             <Row>
                 <Col md={4}>
-                    <Card className="h-100 d-flex flex-column">
+                    <Card className="h-100 d-flex flex-column card-custom">
                         <Card.Body>
                             <Card.Title>About</Card.Title>
                             <Card.Subtitle className="mb-2 text-muted">Trail: {trail.name}</Card.Subtitle>

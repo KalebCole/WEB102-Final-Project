@@ -139,8 +139,8 @@ const TrailAdd = ({ isMapLoaded, userLocation, setTrails }) => {
   return (
     <>
     <Container>
+      <Form className="form">
       <h1>Add a Trail</h1>
-      <Form>
         <Form.Group controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control type="text" name="name" onChange={handleChange} />

@@ -17,7 +17,8 @@ const TrailCard = ({ trail, userLocation, visits }) => {
         <Card className="mb-3 card-custom" onClick={() => router(`/details/${trail.id}`)} style={{ cursor: 'pointer' }}>
             <Row noGutters>
                 <Col md={4}>
-                    <Card.Img src={trail.image_url} alt={trail.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    
+                        <Card.Img src={trail.image_url|| "https://via.placeholder.com/400"} alt={trail.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </Col>
                 <Col md={8}>
                     <Card.Body>

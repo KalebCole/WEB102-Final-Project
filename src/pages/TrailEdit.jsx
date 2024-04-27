@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "../client";
 import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
 import { GoogleMap, Marker } from "@react-google-maps/api";
+//import styles
+import "../styles/main.scss";
 
 // eslint-disable-next-line react/prop-types
 const TrailEdit = ({
@@ -139,8 +141,8 @@ const TrailEdit = ({
     <Container className="my-4">
       <Row>
         <Col md={6}>
-          <Card>
-            <Card.Body>
+        <Card className="card-custom">
+            <Card.Body className="test">
               <Card.Title>Edit Trail</Card.Title>
               <Form onSubmit={handleEditTrail}>
                 <Form.Group controlId="formTrailName">
