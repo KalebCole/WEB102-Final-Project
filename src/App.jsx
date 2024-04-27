@@ -1,10 +1,8 @@
-
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/main.scss';
 import { useEffect, useState } from 'react';
 import { Home, TrailEdit, TrailDetail, TrailAdd, VisitAdd } from './pages';
-import { useRoutes } from "react-router-dom";
+import { useRoutes, useNavigate } from "react-router-dom";
 import { useLoadScript } from "@react-google-maps/api";
 import { supabase } from "./client";
 import { Navbar, Nav, Container } from 'react-bootstrap';
@@ -13,6 +11,7 @@ function App() {
     const [trails, setTrails] = useState([]);
     const [visits, setVisits] = useState([]);
     const [userLocation, setUserLocation] = useState({});
+    const router = useNavigate();
     
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_REACT_APP_GOOGLE_MAP_KEY,
@@ -103,11 +102,36 @@ function App() {
     const deg2rad = (deg) => {
         return deg * (Math.PI / 180);
     };
-
+    const deleteTrail = async (trailId) => { 
+        console.log("Deleting trail...")
+        if (!window.confirm("Are you sure you want to delete this trail?")) {
+            return;
+        }
+    
+        // Delete visits associated with the trail
+        const { error: visitError } = await supabase
+          .from("Visits")
+          .delete()
+          .eq("trail_id", trailId);
+    
+        if (visitError) {
+          console.error("Error deleting visits: ", visitError.message);
+        } else {
+          console.log(`Deleted visits.`);
+        }
+    
+        const { error } = await supabase.from("Trails").delete().eq("id", trailId);
+        if (error) {
+          console.error("Error deleting trail: ", error.message);
+        } else {
+          setTrails(trails.filter((trail) => trail.id !== trailId));
+          router("/");
+        }
+    };
     const routes = useRoutes([
         { path: "/", element: <Home trails={trails} isMapLoaded={isLoaded} userLocation={userLocation} visits={visits} /> },
         { path: "/add-trail", element: <TrailAdd isMapLoaded={isLoaded} userLocation={userLocation} setTrails={setTrails} /> },
-        { path: "/edit/:id", element: <TrailEdit isMapLoaded={isLoaded} userLocation={userLocation} trails={trails} setTrails={setTrails} /> },
+        { path: "/edit/:id", element: <TrailEdit isMapLoaded={isLoaded} userLocation={userLocation} trails={trails} setTrails={setTrails} deleteTrail={deleteTrail} /> },
         { path: "/details/:id", element: <TrailDetail /> },
         { path: "/add-visit/:id", element: <VisitAdd /> },
         { path: "*", element: <Home trails={trails} isMapLoaded={isLoaded} userLocation={userLocation} /> }
@@ -115,7 +139,7 @@ function App() {
 
     return (
         <>
-          <Navbar className="navbar-custom" expand="lg">
+          <Navbar className="navbar-custom"  expand="lg">
             <Container>
               <Navbar.Brand href="/">Trail Connect</Navbar.Brand>
               {/* home link */}

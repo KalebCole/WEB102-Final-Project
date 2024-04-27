@@ -4,9 +4,16 @@ import { supabase } from "../client";
 import { Container, Form, Button, Row, Col, Card } from "react-bootstrap";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 
-const TrailEdit = ({ isMapLoaded, userLocation, trails, setTrails }) => {
-  const { id } = useParams();
+// eslint-disable-next-line react/prop-types
+const TrailEdit = ({
+  isMapLoaded,
+  userLocation,
+  trails,
+  setTrails,
+  deleteTrail,
+}) => {
   const router = useNavigate();
+  const { id } = useParams();
   const [address, setAddress] = useState("");
   const [mapLocation, setMapLocation] = useState(
     { lat: 37.7749, lng: -122.4194 } // Default to San Francisco, or any valid location
@@ -19,7 +26,21 @@ const TrailEdit = ({ isMapLoaded, userLocation, trails, setTrails }) => {
     rating: "",
     image_url: "",
   });
-  const [shouldRedirect, setShouldRedirect] = useState(false);
+
+  useEffect(() => {
+    const fetchTrail = async () => {
+      const { data, error } = await supabase
+        .from("Trails")
+        .select("*")
+        .eq("id", id);
+      if (error) {
+        console.error("Error fetching trail: ", error.message);
+      } else {
+        setTrail(data[0]);
+      }
+    };
+    fetchTrail();
+  }, [id]);
 
   useEffect(() => {
     // when the trail updates, update the map location
@@ -64,20 +85,6 @@ const TrailEdit = ({ isMapLoaded, userLocation, trails, setTrails }) => {
   const handleChange = (e) => {
     setTrail({ ...trail, [e.target.name]: e.target.value });
   };
-  useEffect(() => {
-    const fetchTrail = async () => {
-      const { data, error } = await supabase
-        .from("Trails")
-        .select("*")
-        .eq("id", id);
-      if (error) {
-        console.error("Error fetching trail: ", error.message);
-      } else {
-        setTrail(data[0]);
-      }
-    };
-    fetchTrail();
-  }, [id]);
 
   const handleEditTrail = async (e) => {
     e.preventDefault();
@@ -125,34 +132,6 @@ const TrailEdit = ({ isMapLoaded, userLocation, trails, setTrails }) => {
         return updatedTrails;
       });
       router(`/details/${id}`);
-    }
-  };
-
-  const deleteTrail = async (event) => {
-    event.preventDefault();
-    if (!confirm("Are you sure you want to delete this trail?")) {
-      return;
-    }
-    // Delete visits associated with the trail
-    const { data: visitData, error: visitError } = await supabase
-      .from("Visits")
-      .delete()
-      .eq("trail_id", id);
-
-    if (visitError) {
-      console.error("Error deleting visits: ", visitError.message);
-    } else {
-      console.log(`Deleted visits.`);
-    }
-
-    const { data, error } = await supabase.from("Trails").delete().eq("id", id);
-    if (error) {
-      console.error("Error deleting trail: ", error.message);
-    } else {
-      let newTrails = [...trails];
-      newTrails = newTrails.filter((trail) => trail.id !== id);
-      setTrails(newTrails);
-      router("/");
     }
   };
 
@@ -254,9 +233,14 @@ const TrailEdit = ({ isMapLoaded, userLocation, trails, setTrails }) => {
                 <Button variant="success" type="submit" className="mr-2">
                   Update
                 </Button>
-                <Button variant="danger" onClick={deleteTrail} className="mr-2">
+                <Button
+                  variant="danger"
+                  onClick={() => deleteTrail(id)}
+                  className="mr-2"
+                >
                   Delete Trail
                 </Button>
+
                 <Button
                   variant="secondary"
                   onClick={() => router(`/details/${id}`)}

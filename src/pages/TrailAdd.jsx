@@ -40,6 +40,8 @@ const TrailAdd = ({ isMapLoaded, userLocation, setTrails }) => {
     const data = await response.json();
     if (data.status === "OK" && data.results.length > 0) {
       const location = data.results[0].geometry.location;
+      // console.log({ lat: location.lat, lng: location.lng }
+      // );
       setTrail({
         ...trail,
         location: { lat: location.lat, lng: location.lng },
@@ -101,11 +103,13 @@ const TrailAdd = ({ isMapLoaded, userLocation, setTrails }) => {
     }
 
     // Ensure location is always an object with lat and lng
-    const locationObj = trail.location && trail.location.lat && trail.location.lng ? 
+    const locationObj = (trail.location && trail.location.lat && trail.location.lng) ? 
                         { lat: trail.location.lat, lng: trail.location.lng } : 
                         { lat: null, lng: null }; // Handle cases where location might be undefined
 
-    // Insert a row in your database table
+    // Insert a row in the database table
+    console.log(trail);
+
     try {
         const { data: insertData, error: insertError } = await supabase
           .from('Trails')

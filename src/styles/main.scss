@@ -13,7 +13,7 @@ $color-earth-grey: #829399;  // Grey for neutral, disabled, or secondary element
 $background-color: $color-green-dark;
 
 // Text color
-$text-color: $color-brown-light;
+$text-color: $color-cloud-white;
 
 // Component background, such as cards
 $component-bg: $color-cloud-white;
@@ -60,3 +60,25 @@ $btn-danger-bg: $danger-button-bg;
     }
   }
   
+
+  // Cards
+  .card-custom {
+    background-color: $color-brown-dark;
+    border: 1px solid $border-color;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add box shadow */
+    transition: box-shadow 0.3s ease-in-out; /* Add transition effect */
+    
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Increase box shadow on hover */
+    }
+    
+    .card-header {
+      background-color: $color-green-medium;
+      color: $color-cloud-white;
+    }
+    
+    .card-body {
+      color: $color-cloud-white;
+    }
+  }
