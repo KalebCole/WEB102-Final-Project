@@ -126,6 +126,7 @@ function App() {
         } else {
           setTrails(trails.filter((trail) => trail.id !== trailId));
           router("/");
+          window.location.reload();
         }
     };
     const routes = useRoutes([
